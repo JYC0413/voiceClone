@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Clone</title>
+    <style>
+        .header {
+            height: 5vw;
+            padding: 0 2vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 0.15vw solid #f1f3f5;
+        }
+        .header .left {
+            display:flex;
+            align-items: center;
+            font-size: 1.5vw;
+        }
+        .header .left img {
+            height: 3vw;
+            margin-right: 2vw;
+        }
+        .header .left div {
+            cursor: pointer;
+            user-select: none;
+            padding: 1.15vw 1.5vw 0.95vw;
+            margin: 0 0.2vw;
+            border-bottom: 0.2vw solid transparent;
+        }
+        .header .left div:hover {
+            border-color: black;
+        }
+        .header .right {
+            display:flex;
+            align-items: center;
+            font-size: 1.5vw;
+            text-decoration: none;
+        }
+
+        .header .right .black-button {
+            padding: 0.5vw 1.5vw;
+        }
+
+        .header .right .black-button img {
+            width: 2vw;
+            margin-right: 0.5vw;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin: 8vw 0 4vw;
+        }
+
+        .step {
+            flex: 1;
+            color: #c0c0c0;
+            font-size: 1.4vw;
+            position: relative;
+            text-align: center;
+        }
+
+        .step::before {
+            content: '';
+            width: 100%;
+            height: 0.2vw;
+            background: #ddd;
+            position: absolute;
+            top: -3vw;
+            left: 0;
+            z-index: -1;
+        }
+
+        .step::after {
+            content: '';
+            width: 3vw;
+            height: 3vw;
+            border-radius: 50%;
+            background: white;
+            border: 0.2vw solid #ddd;
+            position: absolute;
+            top: -4.5vw;
+            left: 50%;
+            transform: translate(-50%, 0);
+            z-index: 1;
+        }
+
+        .step:first-child::before {
+            width: 50%;
+            left: auto;
+            right: 0;
+        }
+
+        .step:last-child::before {
+            width: 50%;
+            left: 0;
+        }
+
+        .step.active {
+            color: black;
+            font-weight: bold;
+        }
+
+        .step.active::after {
+            background: black;
+            border: 0.2vw solid #ddd;
+        }
+
+        .step.completed {
+            color: #414141;
+        }
+
+        .step.completed::after {
+            border: 0;
+            background: black;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .content h4 {
+            font-size: 2vw;
+        }
+
+        .content.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin: 4vw 15vw;
+        }
+
+        .inputBox {
+            border: 0.1vw solid #000000;
+            border-radius: 0.625vw;
+            flex: 1;
+            font-size: 2vw;
+            padding: 1vw;
+            width: 68vw;
+            min-width: 0;
+            margin-top: 1vw;
+        }
+
+        .selector {
+            width: 68vw;
+            display: flex;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            user-select: none;
+            cursor: pointer;
+            padding: 1vw;
+            font-size: 2vw;
+            border: 0.1vw solid #000000;
+            border-radius: 0.625vw;
+            margin-top: 2vw;
+        }
+
+        .textBox {
+            flex: 1;
+        }
+
+        .selectIcon {
+            position: absolute;
+            user-select: none;
+            height: 1.2vw;
+            right: 1vw;
+        }
+
+        .dropdown {
+            display: none;
+            border: 0.1vw solid #000000;
+            border-radius: 0 0 0.625vw 0.625vw;
+            position: absolute;
+            top: 4.2vw;
+            width: 70vw;
+            padding: 1vw 0;
+            left: -0.06vw;
+            background: white;
+            z-index: 500;
+        }
+
+        .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dropdown li {
+            padding: 0.5vw 1vw;
+            font-size: 2vw;
+        }
+
+        .dropdown li:hover {
+            background: #f0f0f0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .white-button,
+        .black-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            padding: 1vw 0;
+            border-radius: 0.8vw;
+            border: 0.1vw solid black;
+        }
+
+        .white-button:hover,
+        .black-button:hover {
+            box-shadow: 0.1vw 0.2vw 0.25vw rgba(0, 0, 0, 0.1);
+        }
+
+        .white-button:active,
+        .black-button:active {
+            opacity: 0.8;
+            box-shadow: 0.1vw 0.1vw 0.15vw rgba(0, 0, 0, 0.15);
+        }
+
+        .white-button {
+            color: black;
+            background-color: white;
+        }
+
+        .black-button {
+            color: white;
+            background-color: black;
+        }
+
+        .buttons .white-button,
+        .buttons .black-button {
+            flex: 1;
+            font-size: 2vw;
+        }
+
+        .buttons .black-button {
+            flex: 1;
+            margin-left: 5vw;
+            font-size: 2vw;
+        }
+
+        .upload img {
+            width: 2.5vw;
+            margin-right: 0.5vw;
+        }
+
+        .upload .white-button,
+        .upload .black-button {
+            width: 70vw;
+            font-size: 2vw;
+        }
+
+        .upload .white-button {
+            margin-top: 1vw;
+        }
+
+        .upload .black-button {
+            margin-top: 2vw;
+        }
+
+        .upload #upload-alert {
+            font-size: 1.5vw;
+            text-align: center;
+            padding-top: 1vw;
+            color: red;
+        }
+
+        .upload #upload-2-1 {
+            width: 70vw;
+        }
+
+        .upload #upload-2-1 .alart {
+            margin-top: 1vw;
+            font-size: 1vw;
+        }
+
+        .upload #upload-2-1 .alart div {
+            padding-top: 0.2vw;
+        }
+
+        .upload #upload-2-1 .alart span {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .file-tab {
+            display: flex;
+            flex: 1;
+            cursor: pointer;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 2vw;
+            border: 0.1vw solid #000000;
+            border-radius: 1vw;
+            padding: 3vw 2.5vw;
+        }
+
+        .file-tab .left {
+            display: flex;
+            align-items: center;
+        }
+
+        .file-tab .left img {
+            margin-right: 1vw;
+        }
+
+        #record-your-voice {
+            align-items: center;
+            flex-direction: column;
+            position: relative;
+            background-color: black;
+            color: white;
+            font-size: 1.6vw;
+            margin: 2vw 15vw;
+            padding: 2vw 5vw 4vw;
+            border-radius: 1vw;
+        }
+
+        #record-your-voice div {
+            margin: 0.6vw 0;
+        }
+
+        #record-your-voice h4 {
+            font-size: 2vw;
+            text-align: center;
+        }
+
+        #record-your-voice .black-button {
+            width: max-content;
+            padding: 0.5vw 1.6vw;
+            border-color: white;
+        }
+
+        .waveform-container .black-button {
+            padding: 0.5vw 1.6vw;
+            font-size: 1.6vw;
+            margin-left: 1vw;
+        }
+
+        .close-icon {
+            position: absolute;
+            top: 3vw;
+            right: 3vw;
+            width: 2vw;
+            cursor: pointer;
+        }
+
+        .audio-segment {
+            border: 0.1vw solid black;
+            padding: 2vw;
+            font-size: 1.7vw;
+            width: 70vw;
+            border-radius: 0.5vw;
+            margin-bottom: 2vw;
+        }
+
+        .segment-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2vw;
+        }
+
+        .delete-icon {
+            cursor: pointer;
+            width: 2vw;
+        }
+
+        .segment-content {
+            display: flex;
+        }
+
+        .audio-box {
+            flex: 1;
+            border: 0.1vw solid black;
+            border-radius: 1vw;
+            padding: 1.5vw;
+            margin-right: 1vw;
+        }
+
+        #upload-audio-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            padding: 3vw 0;
+        }
+
+        .audio-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .audio-icon {
+            width: 2vw;
+            cursor: pointer;
+            margin-right: 1vw;
+        }
+
+        .audio-element {
+            display: none;
+        }
+
+        .audio-actions {
+            font-size: 1.5vw;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #171a1f;
+            margin-top: 2.5vw;
+        }
+
+        .action {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .action-icon {
+            width: 1.8vw;
+            margin-right: 0.5vw;
+        }
+
+        .text-area {
+            font-size: 1.5vw;
+            flex: 1;
+            border-radius: 1vw;
+            padding: 1vw;
+            margin-left: 1vw;
+            border: 0.1vw solid black;
+        }
+
+        .segment-footer {
+            display: flex;
+            align-items: center;
+            color: #323842;
+            font-size: 1vw;
+            margin-top: 2vw;
+        }
+
+        .info-icon {
+            width: 2vw;
+            margin-right: 0.5vw;
+        }
+
+        .preview h4 {
+            margin-bottom: 1.5vw;
+        }
+        .preview #add-button {
+            display: flex;
+            justify-content: right;
+            width: 74vw;
+            margin-bottom: 1.5vw;
+            cursor: pointer;
+        }
+        .preview #add-icons {
+            width: 1.8vw;
+            margin-right: 0.5vw;
+        }
+        .preview #text {
+            font-size: 1.5vw;
+        }
+
+        .pay .checkText {
+            font-size: 1.5vw;
+        }
+
+        .pay input {
+            width: 1.7vw;
+        }
+
+        .pay .checkPart {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="left">
+        <img src="/icons/logo.svg" alt="VoiceClone Logo"/>
+    </div>
+    <a href="/dashboard" class="right">
+        <div class="black-button"><img alt="signup" src="/icons/clone.svg"/><div>My voice</div></div>
+    </a>
+</div>
+
+<div class="progress-bar">
+    <div class="step active" data-step="1">Name</div>
+    <div class="step" data-step="2">Upload source audio</div>
+    <div class="step" data-step="3">Preview processed audio</div>
+    <div class="step" data-step="4">Pay</div>
+</div>
+
+<div id="main">
+    <div class="content-container">
+        <div class="name content active" data-step="1">
+            <h4>Name Your Voice</h4>
+            <input id="voice-name" class="inputBox" type="text"/>
+            <div id="select-language" class="selector">
+                <input id="select-language-input" class="hidden" value="en"/>
+                <div class="textBox" id="textBox">English</div>
+                <img alt="" id="selectIcon" class="selectIcon" src="/icons/select.svg"/>
+                <div id="dropdown" class="dropdown">
+                    <ul id="optionsList">
+                        <li id="en">English</li>
+                        <li id="zh">Chinese</li>
+                        <li id="mixed">Chinese and English Mixed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="step2" class="upload content" data-step="2">
+            <h4 id="step2-header">Upload the source audio</h4>
+            <div id="upload-1">
+                <button class="white-button" id="upload-part-upload"><img alt="upload" src="/icons/upload-audio.svg"/>Upload
+                    Audio Sample (1-2 mins)
+                </button>
+                <div class="hidden" id="upload-alert"></div>
+                <input id="audio-sample-upload" type="file" accept=".mp3, .wav" class="hidden"/>
+                <button class="black-button" id="audio-record"><img alt="record" src="/icons/record.svg"/>Record Your
+                    Voice (Recommended)
+                </button>
+            </div>
+            <div class="hidden" id="upload-2-1">
+                <div id="file-tab" class="file-tab">
+                    <div class="left">
+                        <img alt="play audio" src="/icons/audio.svg"/>
+                        <div id="upload-file-name"></div>
+                    </div>
+                    <img id="upload-delete" alt="delete" src="/icons/delete.svg"/>
+                </div>
+                <audio id="upload-file-audio"></audio>
+                <div class="alart">
+                    <div>Upload your video, and we’ll automatically segment the audio sentence by sentence.</div>
+                    <div>Already segmented manually? <span id="skip-step">Skip this step and upload your audio files directly.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="preview content" data-step="3">
+            <h4>Preview the processed training data</h4>
+            <div id="add-button">
+                <img id="add-icons" src="/icons/add.svg">
+                <div id="text">Add New Segment Manually</div>
+            </div>
+            <div id="preview-list"></div>
+        </div>
+        <div class="pay content" data-step="4">
+            <h4>Almost here! Pay for the service</h4>
+            <div class="checkPart">
+                <input type="checkbox"/>
+                <div class="checkText" style="font-size: 1.5vw;">I hereby confirm that I have all the necessary rights or consents to clone and use this voice.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button class="white-button" id="prev" disabled>Back</button>
+        <button class="black-button" id="next">Next</button>
+    </div>
+</div>
+<div id="record-your-voice" class="hidden">
+    <div>
+        <img id="close-icon" class="close-icon" src="/icons/close.svg">
+        <h4>Record your voice</h4>
+        <div>Read the following three sentences one by one for best results</div>
+        <div>1. Reading text: The quick brown fox jumps over the lazy dog.</div>
+        <div id="waveform1" class="hidden waveform-container"></div>
+        <div>2. Reading text: The rapid advancement of technology has revolutionized the way we live, work, and interact
+            with one another.
+        </div>
+        <div id="waveform2" class="hidden waveform-container"></div>
+    </div>
+    <div id="record-submit" class="black-button">Submit</div>
+</div>
+<script>
+    const steps = document.querySelectorAll('.step');
+    const contents = document.querySelectorAll('.content');
+    const main = document.getElementById('main');
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
+
+    const selector = document.getElementById('select-language');
+    const textBox = document.getElementById('textBox');
+    const optionsList = document.getElementById('optionsList');
+    const selectIcon = document.getElementById('selectIcon');
+    const dropdown = document.getElementById('dropdown');
+
+    const uploadPartUpload = document.getElementById('upload-part-upload');
+    const audioSampleUpload = document.getElementById('audio-sample-upload');
+    const audioRecord = document.getElementById('audio-record');
+    const uploadAlert = document.getElementById('upload-alert');
+    const uploadButtonTab = document.getElementById('upload-1');
+    const uploadFileTab = document.getElementById('upload-2-1');
+    const fileTab = document.getElementById('file-tab');
+    const uploadFileName = document.getElementById('upload-file-name');
+    const uploadDelete = document.getElementById('upload-delete');
+    const uploadFileAudio = document.getElementById('upload-file-audio');
+    const skipStep = document.getElementById('skip-step');
+
+    const closeIcon = document.getElementById("close-icon");
+    const recordSubmit = document.getElementById("record-submit");
+    const recordYourVoice = document.getElementById("record-your-voice");
+    const waveformList = recordYourVoice.querySelectorAll('[id^="waveform"]');
+
+    const previewList = document.getElementById('preview-list');
+    const addButton = document.getElementById('add-button');
+
+    let currentStep = 1;
+
+    let previewData = [];
+
+    optionsList.addEventListener('click', function (event) {
+        if (event.target.tagName === 'LI') {
+            textBox.innerText = event.target.textContent;
+            selector.style.borderRadius = "0.625vw";
+            selector.style.borderBottom = "0.1vw";
+            selector.style.border = "0.1vw solid #000000";
+            dropdown.style.display = 'none'; // 关闭下拉框
+            selectIcon.style.transform = "rotate(0deg)";
+        }
+    });
+
+    function updateStep(step) {
+        // Update progress bar
+        steps.forEach((stepEl, index) => {
+            stepEl.classList.toggle('active', index === step - 1);
+            stepEl.classList.toggle('completed', index < step - 1);
+        });
+
+        // Update content display
+        contents.forEach(contentEl => {
+            contentEl.classList.toggle('active', parseInt(contentEl.dataset.step, 10) === step);
+        });
+
+        // Update button states
+        prevButton.disabled = step === 1;
+        nextButton.textContent = step === steps.length ? 'Pay $3.99 and get your voice now' : 'Next';
+    }
+
+    prevButton.addEventListener('click', () => {
+        if (currentStep > 1) {
+            currentStep--;
+            updateStep(currentStep);
+        }
+    });
+
+    skipStep.onclick = () => {
+        previewData = [
+            {
+                id: 1
+            }, {
+                id: 2
+            }, {
+                id: 3
+            }
+        ];
+        goNextStep()
+    }
+
+    const goNextStep = () => {
+        if (currentStep === 1) {
+
+        } else if (currentStep === 2) {
+            setPreview();
+        }
+        if (currentStep < steps.length) {
+            currentStep++;
+            updateStep(currentStep);
+        } else {
+            alert('All steps completed!');
+        }
+    }
+
+    nextButton.addEventListener('click', ()=> {
+        // 模拟请求的测试数据
+        previewData = [
+            {
+                id: 1,
+                text: "hi, my name is Trump.",
+                url: "https://platform.r2.fish.audio/task/e608cb262c18480b9adaf387a2f44313.mp3"
+            }, {
+                id: 2,
+                text: "你好, 我的名字叫川普.",
+                url: "https://platform.r2.fish.audio/task/315029e5ec45424ba6136b9cedabe913.mp3"
+            }
+        ];
+        goNextStep()
+    });
+
+    updateStep(currentStep);
+
+    const openDropdown = () => {
+        dropdown.style.display = "block";
+        selector.style.borderRadius = "0.625vw 0.625vw 0 0";
+        selector.style.borderBottom = "0";
+        selectIcon.style.transform = "rotate(-90deg)";
+    }
+
+    uploadFileAudio.stop = function () {
+        this.pause();
+        this.currentTime = 0;
+    };
+
+    document.addEventListener('click', function (event) {
+        if (!event.target.closest('#select-language')) {
+            selector.style.borderRadius = "0.625vw";
+            selector.style.border = "0.1vw solid #000000";
+            dropdown.style.display = 'none';
+            selectIcon.style.transform = "rotate(0deg)";
+        }
+        if (!event.target.closest('#file-tab')) {
+            uploadFileAudio.stop()
+        }
+    })
+
+    textBox.onclick = openDropdown
+    selectIcon.onclick = openDropdown
+
+    uploadPartUpload.onclick = () => {
+        audioSampleUpload.click()
+    }
+
+    audioSampleUpload.addEventListener('change', (event) => {
+        uploadAlert.style.display = "none";
+
+        const files = event.target.files;
+        if (files.length === 1) {
+            const file = files[0]
+            const objectUrl = URL.createObjectURL(file);
+
+            uploadFileAudio.src = objectUrl;
+
+            uploadFileAudio.addEventListener('loadedmetadata', () => {
+                const duration = uploadFileAudio.duration;
+                const minDuration = 50;
+                const maxDuration = 180;
+
+                if (duration >= minDuration && duration <= maxDuration) {
+                    uploadButtonTab.style.display = "none";
+                    uploadFileTab.style.display = "block";
+                    uploadFileName.innerText = file.name;
+                    fileTab.addEventListener('click', () => {
+                        uploadFileAudio.play()
+                    })
+                } else {
+                    uploadAlert.style.display = "block";
+                    uploadAlert.innerText = `The audio should be at least 50 long and at most 3 minutes.`;
+                }
+
+                URL.revokeObjectURL(objectUrl);
+            });
+        }
+    });
+    uploadDelete.addEventListener('click', (event) => {
+        event.stopPropagation();
+        uploadButtonTab.style.display = "block";
+        uploadFileTab.style.display = "none";
+        uploadFileAudio.stop()
+        audioSampleUpload.value = '';
+    })
+    audioRecord.addEventListener('click', () => {
+        main.style.display = "none";
+        recordYourVoice.style.display = "flex";
+    })
+    closeIcon.addEventListener('click', () => {
+        main.style.display = "block";
+        recordYourVoice.style.display = "none";
+    })
+
+    class AudioWaveform {
+        constructor(containerId, options = {}) {
+            this.config = {
+                width: "100%",
+                height: "4vw",
+                initialPointWidth: 1,
+                amplitudeScale: -1.2,
+                lineWidth: 1,
+                lineColor: 'rgb(255, 255, 255)',
+                ...options
+            };
+
+            this.init(containerId);
+        }
+
+        init(containerId) {
+            this.container = document.getElementById(containerId);
+            this.container.style.display = "flex";
+            this.container.style.alignItems = "center";
+            this.createElements();
+
+            this.audioChunks = [];
+            this.waveformHistory = [];
+            this.isRecording = false;
+
+            this.recordButton.onclick = () => {
+                this.recordButton.style.display = "none";
+                this.canvas.style.display = "block";
+                this.timerDisplay.style.display = "block";
+                this.startButton.style.display = "block";
+                this.stopButton.style.display = "block";
+                this.startRecording();
+            }
+            this.startButton.addEventListener('click', () => this.startRecording());
+            this.stopButton.addEventListener('click', () => this.stopRecording());
+        }
+
+        createElements() {
+            this.recordButton = document.createElement('button');
+            this.recordButton.textContent = 'Record';
+            this.recordButton.className = "black-button";
+            this.recordButton.style.marginLeft = "0";
+            this.startButton = document.createElement('button');
+            this.canvas = document.createElement('canvas');
+            this.canvas.style.width = this.config.width;
+            this.canvas.style.height = this.config.height;
+            this.canvas.style.display = "none";
+            this.canvasCtx = this.canvas.getContext('2d');
+            this.timerDisplay = document.createElement('div');
+            this.timerDisplay.textContent = "00:00";
+            this.timerDisplay.style.marginLeft = "1.2vw";
+            this.timerDisplay.style.display = "none";
+            this.startButton.textContent = 'Restart';
+            this.startButton.className = "black-button";
+            this.startButton.style.display = "none";
+            this.stopButton = document.createElement('button');
+            this.stopButton.textContent = 'Finish';
+            this.stopButton.className = "black-button";
+            this.stopButton.style.display = "none";
+            this.audioElement = document.createElement('audio');
+            this.audioElement.style.display = "none";
+            this.recordFile = document.createElement('div');
+            this.recordFile.className = "file-tab";
+            this.recordFile.style.backgroundColor = "#ffffff";
+            this.recordFile.style.display = "none";
+            this.fileLeftPart = document.createElement('div');
+            this.fileLeftPart.className = "left";
+            this.fileLeftImg = document.createElement('img');
+            this.fileLeftImg.alt = "play audio";
+            this.fileLeftImg.src = "/icons/audio.svg";
+            this.fileLeftImg.style.width = "2vw";
+            this.fileLeftText = document.createElement('div');
+            this.fileLeftText.innerText = "new_recording.mp3";
+            this.fileLeftText.style.color = "black";
+            this.fileRightImg = document.createElement('img');
+            this.fileRightImg.alt = "delete";
+            this.fileRightImg.src = "/icons/delete.svg";
+            this.fileRightImg.style.width = "2vw";
+
+            this.container.appendChild(this.recordButton);
+            this.container.appendChild(this.canvas);
+            this.container.appendChild(this.timerDisplay);
+            this.container.appendChild(this.startButton);
+            this.container.appendChild(this.stopButton);
+            this.recordFile.appendChild(this.fileLeftPart);
+            this.recordFile.appendChild(this.fileRightImg);
+            this.fileLeftPart.appendChild(this.fileLeftImg);
+            this.fileLeftPart.appendChild(this.fileLeftText);
+            this.container.appendChild(this.recordFile);
+            this.container.appendChild(this.audioElement);
+        }
+
+        async startRecording() {
+            try {
+                this.waveformHistory = [];
+                this.audioChunks = [];
+
+                this.audioStream = await navigator.mediaDevices.getUserMedia({audio: true});
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.analyser = this.audioContext.createAnalyser();
+
+                const source = this.audioContext.createMediaStreamSource(this.audioStream);
+                source.connect(this.analyser);
+                this.analyser.fftSize = 256;
+                this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+
+                this.mediaRecorder = new MediaRecorder(this.audioStream);
+                this.mediaRecorder.start();
+                this.mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        this.audioChunks.push(event.data);
+                        this.displayAudioPlayer()
+                    }
+                };
+
+                this.isRecording = true;
+                this.updateTimer();
+                this.recordingStartTime = Date.now();
+                this.draw();
+
+            } catch (error) {
+                console.error('Error starting recording:', error);
+            }
+        }
+
+        stopRecording() {
+            if (this.mediaRecorder && this.isRecording) {
+                this.mediaRecorder.stop();
+                this.audioStream.getTracks().forEach(track => track.stop());
+                this.isRecording = false;
+                this.startButton.disabled = false;
+                cancelAnimationFrame(this.animationId);
+                clearInterval(this.timerInterval);
+                this.canvas.style.display = "none";
+                this.timerDisplay.style.display = "none";
+                this.startButton.style.display = "none";
+                this.stopButton.style.display = "none";
+            }
+        }
+
+        calculatePointWidth() {
+            const totalPoints = this.waveformHistory.length;
+            const canvasWidth = this.canvas.width;
+
+            if (totalPoints * this.config.initialPointWidth > canvasWidth) {
+                return canvasWidth / totalPoints;
+            }
+            return this.config.initialPointWidth;
+        }
+
+        getAudioBlob() {
+            return new Blob(this.audioChunks, {type: 'audio/webm'});
+        }
+
+        displayAudioPlayer() {
+            const audioBlob = this.getAudioBlob();
+            this.audioElement.src = URL.createObjectURL(audioBlob);
+            this.recordFile.style.display = "flex";
+            this.fileLeftImg.onclick = () => {
+                this.audioElement.play()
+            }
+            this.fileRightImg.onclick = (event) => {
+                event.stopPropagation();
+                this.audioElement.pause()
+                this.audioElement.currentTime = 0;
+                this.audioElement.src = ""
+                this.audioChunks = []
+                this.waveformHistory = [];
+                this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.timerDisplay.textContent = "00:00";
+                this.recordButton.style.display = "block";
+                this.recordFile.style.display = "none";
+            }
+        }
+
+        updateTimer() {
+            this.timerInterval = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - this.recordingStartTime) / 1000);
+                const minutes = String(Math.floor(elapsedTime / 60)).padStart(2, '0');
+                const seconds = String(elapsedTime % 60).padStart(2, '0');
+                this.timerDisplay.textContent = `${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        draw() {
+            if (!this.isRecording) return;
+
+            this.animationId = requestAnimationFrame(() => this.draw());
+
+            this.analyser.getByteTimeDomainData(this.dataArray);
+            let sum = 0;
+            for (let i = 0; i < this.dataArray.length; i++) {
+                sum += Math.abs(this.dataArray[i] - 128);
+            }
+            const average = sum / this.dataArray.length;
+
+            this.waveformHistory.push(average);
+
+            this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            const pointWidth = this.calculatePointWidth();
+
+            this.canvasCtx.beginPath();
+            this.canvasCtx.strokeStyle = this.config.lineColor;
+            this.canvasCtx.lineWidth = this.config.lineWidth;
+
+            const centerY = this.canvas.height - 20;
+
+            this.waveformHistory.forEach((value, index) => {
+                const x = index * pointWidth;
+                const y = centerY + (value * this.config.amplitudeScale);
+
+                if (index === 0) {
+                    this.canvasCtx.moveTo(x, y);
+                } else {
+                    this.canvasCtx.lineTo(x, y);
+                }
+            });
+
+            this.canvasCtx.stroke();
+        }
+    }
+
+    recordSubmit.onclick = () => {
+        goNextStep();
+        main.style.display = "block";
+        recordYourVoice.style.display = "none";
+    }
+
+    // 遍历匹配的元素
+    waveformList.forEach(element => {
+        new AudioWaveform(element.id)
+    });
+
+    let a = 1;
+
+    const changePreviewData = (index, file, text, that) => {
+        if (index !== undefined) {
+            const newObj = previewData.filter(item => item.id === index)[0];
+            if (file) {
+                newObj["file"] = file
+                that.audioName.innerText = file.name;
+                that.audioElement.src = URL.createObjectURL(file);
+                that.showAudioBox.style.display = "block";
+                that.segmentFooter.style.display = "flex";
+                that.uploadActionBox.style.display = "none";
+            }
+            if (text !== undefined) {
+                newObj["text"] = text
+            }
+            const newText = newObj["text"]
+            if(newText) {
+                that.infoText.innerText = "If there is any error in the audio, please download and re-upload the corrected audio file"
+            }else {
+                that.infoText.innerText = "Please type the script for the audio here."
+            }
+        }
+    }
+
+    const addPreviewData = () => {
+        const newPreviewObj = {
+            id: previewData[previewData.length - 1].id + 1
+        }
+        previewData.push(newPreviewObj);
+        addPreviewTab(newPreviewObj)
+    }
+
+    addButton.onclick = addPreviewData
+
+    const deletePreviewData = (index) => {
+        if (index !== undefined) {
+            previewData = previewData.filter(item => item.id !== index);
+        }
+    }
+
+    class previewFile {
+        constructor(containerId, options = {}) {
+            this.container = document.getElementById(containerId);
+
+            if (!this.container) {
+                throw new Error(`Container with ID "${containerId}" not found`);
+            }
+
+            this.options = {
+                index: 1,
+                text: '',
+                audioUrl: '',
+                ...options,
+            };
+
+            this.render();
+            this.attachEventListeners();
+        }
+
+        render() {
+            this.container.innerHTML = `
+            <div class="audio-segment">
+                <div class="segment-header">
+                    <div>Segment #${this.options.index}</div>
+                    <img class="delete-icon" alt="delete" src="/icons/delete.svg">
+                </div>
+                <div class="segment-content">
+                    <div id="show-audio-box" class="${this.options.audioUrl ? '' : 'hidden '}audio-box">
+                        <div class="audio-info">
+                            <img class="audio-icon" alt="play audio" src="/icons/audio.svg">
+                            <div class="audio-name">${'segment' + this.options.index + ".mp3"}</div>
+                            <audio class="audio-element" src="${this.options.audioUrl}"></audio>
+                        </div>
+                        <div class="audio-actions">
+                            <div class="action upload-action">
+                                <img class="action-icon" alt="upload" src="/icons/upload.svg">
+                                <div>Upload a new audio</div>
+                            </div>
+                            <div class="action download-action">
+                                 <img class="action-icon" alt="download" src="/icons/download.svg">
+                                 <div>Download the audio</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="upload-audio-box" style="display: ${this.options.audioUrl ? 'none' : 'flex'};" class="audio-box">
+                        <div class="action">
+                            <img class="action-icon" alt="upload" src="/icons/upload.svg">
+                            <div>Upload your segmented audio</div>
+                        </div>
+                    </div>
+                    <input id="upload-file-input" type="file" accept=".mp3, .wav" class="hidden"/>
+                    <textarea id="text-area" placeholder="You can type the recoginized text here." class="text-area">${this.options.text}</textarea>
+                </div>
+                <div style="display: ${this.options.audioUrl ? 'flex' : 'none'};" class="segment-footer">
+                    <img class="info-icon" alt="info" src="/icons/info.svg">
+                    <div id="info-text">${this.options.text ? "If there is any error in the audio, please download and re-upload the corrected audio file" : "Please type the script for the audio here."}</divid>
+                </div>
+            </div>
+        `;
+
+            this.audioElement = this.container.querySelector('.audio-element');
+            this.deleteIcon = this.container.querySelector('.delete-icon');
+            this.uploadAction = this.container.querySelector('.upload-action');
+            this.showAudioBox = this.container.querySelector('#show-audio-box');
+            this.uploadActionBox = this.container.querySelector('#upload-audio-box');
+            this.downloadAction = this.container.querySelector('.download-action');
+            this.textArea = this.container.querySelector('.text-area');
+            this.audioName = this.container.querySelector('.audio-name');
+            this.uploadFileInput = this.container.querySelector('#upload-file-input');
+            this.segmentFooter = this.container.querySelector('.segment-footer');
+            this.infoText = this.container.querySelector('#info-text');
+        }
+
+        attachEventListeners() {
+            const audioIcon = this.container.querySelector('.audio-icon');
+            audioIcon.addEventListener('click', () => {
+                if (this.audioElement.paused) {
+                    this.audioElement.play();
+                } else {
+                    this.audioElement.stop();
+                }
+            });
+
+            // Delete segment
+            this.deleteIcon.addEventListener('click', () => {
+                deletePreviewData(this.options.index);
+                this.container.innerHTML = '';
+            });
+
+            // Handle upload action
+            this.uploadAction.addEventListener('click', () => {
+                this.uploadFileInput.click();
+            });
+
+            // Handle upload action
+            this.uploadActionBox.addEventListener('click', () => {
+                this.uploadFileInput.click();
+            });
+
+            this.textArea.addEventListener('input', () => {
+                changePreviewData(this.options.index, undefined, this.textArea.value, this)
+            });
+
+            this.uploadFileInput.addEventListener('change', (event) => {
+                const files = event.target.files;
+                if (files.length === 1) {
+                    const file = files[0];
+                    changePreviewData(this.options.index, file, undefined, this);
+                }
+            });
+
+            this.downloadAction.addEventListener('click', () => {
+                if (this.audioElement.src) {
+                    const link = document.createElement('a');
+                    link.href = this.audioElement.src;
+                    link.download = 'segment' + this.options.index + ".mp3";
+                    link.click();
+                } else {
+                    alert('No audio file available for download.');
+                }
+            });
+
+            this.audioElement.stop = function () {
+                this.pause();
+                this.currentTime = 0;
+            };
+        }
+    }
+
+    const addPreviewTab = (item) => {
+        const div = document.createElement('div');
+        div.id = "segment-" + item.id
+        previewList.appendChild(div)
+        new previewFile(div.id, {
+            index: item.id,
+            text: item.text || "",
+            audioUrl: item.url || ""
+        });
+    }
+
+    const setPreview = () => {
+        previewData.forEach(item => {
+            addPreviewTab(item)
+        })
+    }
+
+
+</script>
+
+</body>
+</html>

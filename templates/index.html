@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>voice clone</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        .header {
+            height: 5vw;
+            padding: 0 2vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header .left {
+            display:flex;
+            align-items: center;
+            font-size: 1.5vw;
+        }
+        .header .left img {
+            height: 3vw;
+            margin-right: 2vw;
+        }
+        .header .left div {
+            cursor: pointer;
+            user-select: none;
+            padding: 1.65vw 1.5vw 1.45vw;
+            margin: 0 0.2vw;
+            border-bottom: 0.2vw solid transparent;
+        }
+        .header .left #home {
+            font-weight: 600;
+            border-color: black;
+        }
+        .header .left div:hover {
+            border-color: black;
+        }
+        .header .right {
+            display:flex;
+            align-items: center;
+            font-size: 1.5vw;
+        }
+
+        .white-button,
+        .black-button{
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            padding: 0.5vw 3.5vw;
+            border-radius: 0.8vw;
+            border: 0.1vw solid black;
+            margin: 0 0 0 0.5vw;
+        }
+        .white-button:hover,
+        .black-button:hover,
+        .sample .original:hover,
+        .sample .cloned:hover{
+            box-shadow: 0.1vw 0.2vw 0.25vw rgba(0,0,0,0.1);
+        }
+        .white-button:active,
+        .black-button:active,
+        .sample .original:active,
+        .sample .cloned:active {
+            opacity: 0.8;
+            box-shadow: 0.1vw 0.1vw 0.15vw rgba(0,0,0,0.15);
+        }
+        .white-button {
+            color: black;
+            background-color: white;
+        }
+        .black-button {
+            color: white;
+            background-color: black;
+        }
+        .white-button img,
+        .black-button img{
+            height: 1.8vw;
+            margin-right: 0.5vw;
+        }
+
+        .hero {
+            color: white;
+            position: relative;
+        }
+        .hero .hero-text {
+            position: absolute;
+            bottom: 10vw;
+            left: 6vw;
+        }
+        .hero img {
+            width: 100%;
+        }
+        .hero h1 {
+            font-size: 5.5vw;
+            margin-bottom: 2.5vw;
+        }
+        .hero h4 {
+            font-size: 2vw;
+            font-weight: normal;
+        }
+        .hero .black-button {
+            width: max-content;
+            font-weight: 600;
+            font-size: 1.5vw;
+            padding: 0.8vw 1.6vw;
+            margin: 0;
+        }
+
+        .feature {
+            margin-bottom: 4.5vw;
+        }
+        .feature h1 {
+            text-align: center;
+            font-size: 5.5vw;
+            margin-bottom: 2.5vw;
+        }
+        .feature h1 {
+            text-align: center;
+            font-size: 5.5vw;
+            margin-bottom: 2.5vw;
+        }
+        .feature .list {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+        .feature .list {
+            display: flex;
+            justify-content: space-around;
+            padding: 0 6vw;
+        }
+        .feature .list div {
+            flex: 1;
+            border: 0.15vw solid #f3f4f6;
+            border-radius: 1.2vw;
+            height: 19vw;
+            margin: 0 2vw;
+            padding: 2vw;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        .feature .list img {
+            width: 7vw;
+        }
+        .feature .list h2 {
+            font-size: 2vw;
+        }
+        .feature .list p {
+            flex: 1;
+            font-size: 1.4vw;
+        }
+
+        .sample {
+            border-top: 0.1vw solid #dee1e6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 4vw;
+        }
+        .sample-list {
+            background-color: #fafafb;
+            width: 80vw;
+            border-radius: 2vw;
+            margin: 6vw 0 3vw;
+            padding: 2vw;
+        }
+        .sample-list h1 {
+            font-size: 5.5vw;
+            text-align: center;
+            margin-top: 1vw;
+        }
+        .sample-list .original,
+        .sample-list .cloned {
+            display: flex;
+            align-items: center;
+            margin: 0 4vw;
+            width: 100%;
+            cursor: pointer;
+            user-select: none;
+            font-size: 2vw;
+            font-weight: 600;
+            height: 4vw;
+            border-radius: 2vw;
+            padding-left: 2vw;
+        }
+        .sample-list .original {
+            background-color: #dee1e6;
+            color: black;
+        }
+        .sample-list .cloned {
+            background-color: black;
+            color: white;
+        }
+        .sample-list img {
+            width: 2.2vw;
+            margin-right: 2vw;
+        }
+        .sample-list .list {
+            display: flex;
+            align-items: center;
+        }
+        .sample .black-button {
+            font-size: 2vw;
+            padding: 1.6vw 2vw;
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<audio id="original-trump-audio" src="https://platform.r2.fish.audio/task/e608cb262c18480b9adaf387a2f44313.mp3"></audio>
+<audio id="cloned-trump-audio" src="https://platform.r2.fish.audio/task/315029e5ec45424ba6136b9cedabe913.mp3"></audio>
+<div class="header">
+    <div class="left">
+        <img src="/icons/logo.svg" alt="VoiceClone Logo"/>
+        <div id="home">Home</div>
+        <div id="clone">Clone Voice</div>
+        <div id="results">Results</div>
+    </div>
+    <div class="right">
+        <div class="white-button"><img alt="login" src="/icons/login.svg"/><div>Log in</div></div>
+        <div class="black-button"><img alt="signup" src="/icons/signup.svg"/><div>Sign up</div></div>
+    </div>
+</div>
+<div class="hero">
+    <div class="hero-text">
+        <h1>Clone Your Voice</h1>
+        <h4>in minutes</h4>
+        <a href="/clone" class="black-button">Get Started</a>
+    </div>
+    <img alt="hero" src="/icons/hero.svg"/>
+</div>
+<div class="feature">
+    <h1>Feature</h1>
+    <div class="list">
+        <div>
+            <img alt="ease" src="/icons/ease.svg"/>
+            <h2>Ease of Use</h2>
+            <p>All you need to do is upload your voice</p>
+        </div>
+        <div>
+            <img alt="multi" src="/icons/multi.svg"/>
+            <h2>Multi-language support</h2>
+            <p>Support English, Chinese, Koren, Japanese and so on.</p>
+        </div>
+        <div>
+            <img alt="high" src="/icons/high.svg"/>
+            <h2>High quality</h2>
+            <p>Whether it's for podcasts, gaming, or content creation, unleash your creativity with endless possibilities.</p>
+        </div>
+    </div>
+</div>
+<div class="sample">
+    <div class="sample-list">
+        <h1>Samples</h1>
+        <div id="sample-list">
+            <div class="list" id="trump">
+                <div class="original" id="original-trump">
+                    <img src="/icons/play.svg"/>
+                    <div>Original Trump</div>
+                </div>
+                <div class="cloned" id="cloned-trump">
+                    <img src="/icons/play-white.svg"/>
+                    <div>Cloned Trump</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="/clone" class="black-button">Get Started</a>
+</div>
+</body>
+<script>
+    const playMatchAudio = (e) => {
+        const id = e.currentTarget.id
+        if(id) {
+            document.getElementById(id + "-audio").play()
+        }
+    }
+    
+    const setPlaySample = () => {
+        const sampleList = document.getElementById('sample-list');
+        if (sampleList) {
+            const targetDivs = sampleList.querySelectorAll('.original, .cloned');
+            targetDivs.forEach(div => {
+                div.onclick = playMatchAudio
+            });
+        }
+    }
+    setPlaySample()
+</script>
+</html>
